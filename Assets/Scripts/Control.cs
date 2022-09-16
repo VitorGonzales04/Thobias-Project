@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class Control : MonoBehaviour
 {
+<<<<<<< Updated upstream
+=======
+    public LayerMask layerMask;
+    public LayerMask Ground;
+>>>>>>> Stashed changes
     public Animator anima;
     float xmov;
     public Rigidbody2D rdb;
     bool jump,doublejump;
     float jumptime, jumptimeside;
     public ParticleSystem fire;
+
+    bool isTouchingFront;
+    public Transform frontCheck;
+    bool wallSliding;
+    public float wallSlidingSpeed;
+    
     void Start()
     {
 
@@ -44,6 +55,22 @@ public class Control : MonoBehaviour
             anima.SetBool("Fire", true);
         }
 
+        isTouchingFront = Physics2D.OverlapCircle(frontCheck.position, 0.5f, Ground);
+
+        if (isTouchingFront == true && isGrounded == false && input != 0)
+        {
+            wallSliding = true;
+        }
+        else 
+        {
+            wallSliding = false;
+        }
+
+        if (wallSliding) 
+        {
+            Rigidbody.velocity = new 
+        }
+
     }
     void FixedUpdate()
     {
@@ -62,20 +89,26 @@ public class Control : MonoBehaviour
         }
 
         RaycastHit2D hitright;
+<<<<<<< Updated upstream
         hitright = Physics2D.Raycast(transform.position+
             Vector3.up*0.5f, transform.right,1);
 
+=======
+        hitright = Physics2D.Raycast(transform.position, Vector2.right);
+>>>>>>> Stashed changes
         if (hitright)
         {
-            if (hitright.distance < 0.3f)
-            {
-                JumpRoutineSide(hitright);
-            }
-            Debug.DrawLine(hitright.point, transform.position 
-                + Vector3.up * 0.5f);
+            anima.SetFloat("Height", hitright.distance);
+            JumpRoutineWall(hitright);
         }
 
-        
+        RaycastHit2D hitleft;
+        hitleft = Physics2D.Raycast(transform.position, Vector2.left);
+        if (hitleft)
+        {
+            anima.SetFloat("Height", hitleft.distance);
+            JumpRoutineWall(hitleft);
+        }
     }
     /// <summary>
     /// rotina de pulo parte fisica
@@ -113,9 +146,15 @@ public class Control : MonoBehaviour
         }
     }
 
+    private void JumpRoutineWall(RaycastHit2D hit)
+    {
+        if (hit.distance > 0.3f && hitright.distance < 0.1f)
+        {
+            wallSliding = true;
+            jumptime = 1;
+        }
 
-
-
+    }
     /// <summary>
     /// funcao pra inverter o personagem
     /// </summary>
