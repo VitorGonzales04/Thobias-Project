@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class Control : MonoBehaviour
 {
-<<<<<<< Updated upstream
-=======
+
     public LayerMask layerMask;
-    public LayerMask Ground;
->>>>>>> Stashed changes
     public Animator anima;
     float xmov;
     public Rigidbody2D rdb;
@@ -16,8 +13,6 @@ public class Control : MonoBehaviour
     float jumptime, jumptimeside;
     public ParticleSystem fire;
 
-    bool isTouchingFront;
-    public Transform frontCheck;
     bool wallSliding;
     public float wallSlidingSpeed;
     
@@ -55,22 +50,6 @@ public class Control : MonoBehaviour
             anima.SetBool("Fire", true);
         }
 
-        isTouchingFront = Physics2D.OverlapCircle(frontCheck.position, 0.5f, Ground);
-
-        if (isTouchingFront == true && isGrounded == false && input != 0)
-        {
-            wallSliding = true;
-        }
-        else 
-        {
-            wallSliding = false;
-        }
-
-        if (wallSliding) 
-        {
-            Rigidbody.velocity = new 
-        }
-
     }
     void FixedUpdate()
     {
@@ -89,17 +68,12 @@ public class Control : MonoBehaviour
         }
 
         RaycastHit2D hitright;
-<<<<<<< Updated upstream
-        hitright = Physics2D.Raycast(transform.position+
-            Vector3.up*0.5f, transform.right,1);
-
-=======
         hitright = Physics2D.Raycast(transform.position, Vector2.right);
->>>>>>> Stashed changes
+
         if (hitright)
         {
             anima.SetFloat("Height", hitright.distance);
-            JumpRoutineWall(hitright);
+            JumpRoutineWallRight(hitright);
         }
 
         RaycastHit2D hitleft;
@@ -107,7 +81,7 @@ public class Control : MonoBehaviour
         if (hitleft)
         {
             anima.SetFloat("Height", hitleft.distance);
-            JumpRoutineWall(hitleft);
+            JumpRoutineWallLeft(hitleft);
         }
     }
     /// <summary>
@@ -146,12 +120,52 @@ public class Control : MonoBehaviour
         }
     }
 
-    private void JumpRoutineWall(RaycastHit2D hit)
+    private void JumpRoutineWallRight(RaycastHit2D hitright)
     {
-        if (hit.distance > 0.3f && hitright.distance < 0.1f)
+        if (hitright.distance < 0.1f)
         {
             wallSliding = true;
             jumptime = 1;
+        }
+        else
+        {
+            wallSliding = false;
+        }
+
+        if (wallSliding)
+        {
+            rdb.velocity = new Vector2(rdb.velocity.x, Mathf.Clamp(rdb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+
+        if (jump)
+        {
+            jumptime = Mathf.Lerp(jumptime, 0, Time.fixedDeltaTime * 10);
+            rdb.AddForce(Vector2.up * jumptime, ForceMode2D.Impulse);
+        }
+
+    }
+
+    private void JumpRoutineWallLeft(RaycastHit2D hitleft)
+    {
+        if (hitleft.distance < 0.1f)
+        {
+            wallSliding = true;
+            jumptime = 1;
+        }
+        else
+        {
+            wallSliding = false;
+        }
+
+        if (wallSliding)
+        {
+            rdb.velocity = new Vector2(rdb.velocity.x, Mathf.Clamp(rdb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+
+        if (jump)
+        {
+            jumptime = Mathf.Lerp(jumptime, 0, Time.fixedDeltaTime * 10);
+            rdb.AddForce(Vector2.up * jumptime, ForceMode2D.Impulse);
         }
 
     }
